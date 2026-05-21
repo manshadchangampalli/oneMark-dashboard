@@ -1,21 +1,22 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Pencil, Archive, ArchiveRestore } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { topicsApi, type Topic, type CreateTopicDto, type UpdateTopicDto } from '@/api/topics.api';
 import { subjectsApi } from '@/api/subjects.api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { DataTable, type Column } from '@/components/ui/DataTable';
+import { Select } from '@/components/ui/select';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+import { topicDetailRoute } from '@/constants/routes';
 
 export default function Topics() {
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const [subjectId, setSubjectId] = useState<string>('');
   const [includeArchived, setIncludeArchived] = useState(false);
@@ -24,7 +25,7 @@ export default function Topics() {
 
   const { data: subjects = [] } = useQuery({
     queryKey: ['admin-subjects-for-topics'],
-    queryFn:  () => subjectsApi.list(false),
+    queryFn:  () => subjectsApi.list({}),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -38,79 +39,77 @@ export default function Topics() {
   const archive   = useMutation({ mutationFn: topicsApi.archive,   onSuccess: invalidate });
   const unarchive = useMutation({ mutationFn: topicsApi.unarchive, onSuccess: invalidate });
 
-  return (
-    <div className="space-y-5">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Topics</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage topics within each subject.</p>
+  const columns: Column<Topic>[] = [
+    {
+      header: 'Label',
+      accessorKey: 'label',
+      cell: (t) => <span className="font-medium text-app-text">{t.label}</span>,
+    },
+    {
+      header: 'Subject',
+      accessorKey: 'subject.label',
+      cell: (t) => (
+        <span className="inline-flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full" style={{ background: t.subject.colorHex }} />
+          <span className="text-app-muted">{t.subject.label}</span>
+        </span>
+      ),
+    },
+    { header: 'Code', accessorKey: 'code', cell: (t) => <span className="font-mono text-xs">{t.code}</span> },
+    { header: 'Questions', accessorKey: 'questions', className: 'text-right tabular-nums' },
+    {
+      header: 'Status',
+      accessorKey: 'archivedAt',
+      cell: (t) => t.archivedAt ? <Badge variant="outline">Archived</Badge> : <Badge variant="success">Active</Badge>,
+    },
+    {
+      header: 'Actions',
+      accessorKey: 'id',
+      sortable: false,
+      cell: (t) => (
+        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+          {!t.archivedAt ? (
+            <>
+              <Button variant="ghost" size="icon" onClick={() => setEditing(t)}><Pencil className="size-4" /></Button>
+              <Button variant="ghost" size="icon" onClick={() => archive.mutate(t.id)} disabled={archive.isPending}><Archive className="size-4" /></Button>
+            </>
+          ) : (
+            <Button variant="ghost" size="icon" onClick={() => unarchive.mutate(t.id)} disabled={unarchive.isPending}><ArchiveRestore className="size-4" /></Button>
+          )}
         </div>
-        <Button onClick={() => setCreating(true)}><Plus className="size-4" /> New topic</Button>
+      ),
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <div className="text-xs font-bold text-app-muted uppercase tracking-widest mb-1">Content · Topics</div>
+          <h1 className="text-2xl font-bold text-app-text tracking-tight">Topics</h1>
+          <p className="text-sm text-app-muted mt-1">Manage topics within each subject.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="w-44">
+            <option value="">All subjects</option>
+            {subjects.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+          </Select>
+          <label className="inline-flex items-center gap-2 text-sm text-app-muted">
+            <input type="checkbox" checked={includeArchived} onChange={(e) => setIncludeArchived(e.target.checked)} />
+            Archived
+          </label>
+          <Button onClick={() => setCreating(true)}><Plus className="size-4" /> New topic</Button>
+        </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <select
-          value={subjectId}
-          onChange={(e) => setSubjectId(e.target.value)}
-          className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
-        >
-          <option value="">All subjects</option>
-          {subjects.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
-        </select>
-        <label className="inline-flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={includeArchived} onChange={(e) => setIncludeArchived(e.target.checked)} />
-          Show archived
-        </label>
-      </div>
-
-      <Card className="overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Label</TableHead>
-              <TableHead>Subject</TableHead>
-              <TableHead>Code</TableHead>
-              <TableHead className="text-right">Sort</TableHead>
-              <TableHead className="text-right">Questions</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="w-px">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading && <TableRow><TableCell colSpan={7} className="text-center py-10 text-muted-foreground">Loading…</TableCell></TableRow>}
-            {!isLoading && topics.length === 0 && (
-              <TableRow><TableCell colSpan={7} className="text-center py-10 text-muted-foreground">No topics found.</TableCell></TableRow>
-            )}
-            {topics.map(t => (
-              <TableRow key={t.id} className={t.archivedAt ? 'opacity-60' : ''}>
-                <TableCell className="font-medium">{t.label}</TableCell>
-                <TableCell>
-                  <span className="inline-flex items-center gap-2">
-                    <span className="size-2 rounded-full" style={{ background: t.subject.colorHex }} />
-                    {t.subject.label}
-                  </span>
-                </TableCell>
-                <TableCell className="font-mono text-xs">{t.code}</TableCell>
-                <TableCell className="text-right tabular-nums">{t.sortOrder}</TableCell>
-                <TableCell className="text-right tabular-nums">{t.questionCount}</TableCell>
-                <TableCell>{t.archivedAt ? <Badge variant="outline">Archived</Badge> : <Badge variant="success">Active</Badge>}</TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    {!t.archivedAt ? (
-                      <>
-                        <Button variant="ghost" size="icon" onClick={() => setEditing(t)}><Pencil className="size-4" /></Button>
-                        <Button variant="ghost" size="icon" onClick={() => archive.mutate(t.id)} disabled={archive.isPending}><Archive className="size-4" /></Button>
-                      </>
-                    ) : (
-                      <Button variant="ghost" size="icon" onClick={() => unarchive.mutate(t.id)} disabled={unarchive.isPending}><ArchiveRestore className="size-4" /></Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+      <DataTable
+        columns={columns}
+        data={topics}
+        isLoading={isLoading}
+        searchKeys={['label', 'code', 'subject.label']}
+        onRowClick={(t) => navigate(topicDetailRoute(t.id))}
+        emptyMessage="No topics found."
+      />
 
       <TopicFormDialog
         open={creating}

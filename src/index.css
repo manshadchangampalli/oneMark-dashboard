@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@theme {
+  --color-app-bg: #F9FAFB;
+  --color-app-border: #E5E7EB;
+  --color-app-text: #111827;
+  --color-app-muted: #6B7280;
+  --color-app-accent: #F3F4F6;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {

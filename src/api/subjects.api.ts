@@ -31,8 +31,12 @@ export interface UpdateSubjectDto {
 }
 
 export const subjectsApi = {
-  list: async (includeArchived = false): Promise<Subject[]> => {
-    const { data } = await apiClient.get<Subject[]>(ApiRoute.SUBJECTS, { params: { includeArchived } });
+  list: async (params: { examId?: string; includeArchived?: boolean } = {}): Promise<Subject[]> => {
+    const { data } = await apiClient.get<Subject[]>(ApiRoute.SUBJECTS, { params });
+    return data;
+  },
+  detail: async (id: string): Promise<Subject & { counts: any }> => {
+    const { data } = await apiClient.get(`${ApiRoute.SUBJECTS}/${id}`);
     return data;
   },
   create:    (dto: CreateSubjectDto)                  => apiClient.post<Subject>(ApiRoute.SUBJECTS, dto).then(r => r.data),

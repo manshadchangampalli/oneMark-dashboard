@@ -32,6 +32,10 @@ export const examsApi = {
     const { data } = await apiClient.get<Exam[]>(ApiRoute.EXAMS, { params: { includeArchived } });
     return data;
   },
+  detail: async (id: string): Promise<Exam & { counts: { userExams: number; subjectExams: number; topicExams: number; questionExams: number } }> => {
+    const { data } = await apiClient.get(`${ApiRoute.EXAMS}/${id}`);
+    return data;
+  },
   create:    (dto: CreateExamDto)                    => apiClient.post<Exam>(ApiRoute.EXAMS, dto).then(r => r.data),
   update:    (id: string, dto: UpdateExamDto)        => apiClient.patch<Exam>(`${ApiRoute.EXAMS}/${id}`, dto).then(r => r.data),
   archive:   (id: string)                            => apiClient.delete(`${ApiRoute.EXAMS}/${id}`).then(r => r.data),

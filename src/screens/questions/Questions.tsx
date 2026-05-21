@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Card } from '@/components/ui/card';
-import { ROUTE_PATTERN } from '@/constants/routes';
+import { questionDetailRoute } from '@/constants/routes';
 import { useQuestions } from './hooks/questions.hooks';
 import type { ListQuestionsParams } from '@/api/questions.api';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 const STATUS_VARIANT: Record<string, 'success' | 'secondary' | 'outline'> = {
   published: 'success',
@@ -23,6 +23,7 @@ const DIFFICULTY_VARIANT: Record<string, 'success' | 'warning' | 'destructive'> 
 };
 
 export default function Questions() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<ListQuestionsParams['status'] | ''>('');
   const [difficulty, setDifficulty] = useState<ListQuestionsParams['difficulty'] | ''>('');
@@ -39,90 +40,95 @@ export default function Questions() {
   const { data, isLoading } = useQuestions(params);
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Questions</h1>
-        <p className="text-sm text-muted-foreground mt-1">Browse and review the question bank.</p>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <div className="text-xs font-bold text-app-muted uppercase tracking-widest mb-1">Content · Questions</div>
+          <h1 className="text-2xl font-bold text-app-text tracking-tight">Questions</h1>
+          <p className="text-sm text-app-muted mt-1">Browse and review the question bank.</p>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[220px]">
-          <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+        <div className="relative flex-1 min-w-[220px] max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-app-muted pointer-events-none" />
           <Input
             placeholder="Search prompt…"
-            className="pl-8"
+            className="pl-9 bg-white border-app-border"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setCursor(undefined); }}
           />
         </div>
-        <select
+        <Select
           value={status}
           onChange={(e) => { setStatus(e.target.value as ListQuestionsParams['status'] | ''); setCursor(undefined); }}
-          className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+          className="w-36"
         >
           <option value="">All status</option>
           <option value="published">Published</option>
           <option value="draft">Draft</option>
           <option value="archived">Archived</option>
-        </select>
-        <select
+        </Select>
+        <Select
           value={difficulty}
           onChange={(e) => { setDifficulty(e.target.value as ListQuestionsParams['difficulty'] | ''); setCursor(undefined); }}
-          className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+          className="w-36"
         >
           <option value="">All difficulty</option>
           <option value="easy">Easy</option>
           <option value="medium">Medium</option>
           <option value="hard">Hard</option>
-        </select>
+        </Select>
       </div>
 
-      <Card className="overflow-hidden">
+      <div className="rounded-lg border border-app-border bg-white overflow-hidden shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Prompt</TableHead>
-              <TableHead>Subject</TableHead>
-              <TableHead>Topic</TableHead>
-              <TableHead>Difficulty</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Attempts</TableHead>
-              <TableHead className="text-right">XP</TableHead>
+            <TableRow className="bg-app-bg border-b border-app-border">
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Prompt</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Subject</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Topic</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Difficulty</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Status</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">Attempts</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">XP</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-10">Loading…</TableCell></TableRow>
+              <TableRow><TableCell colSpan={7} className="h-32 text-center text-app-muted text-sm">Loading…</TableCell></TableRow>
             )}
             {!isLoading && data?.data.length === 0 && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-10">No questions found.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={7} className="h-32 text-center text-app-muted text-sm">No questions found.</TableCell></TableRow>
             )}
             {data?.data.map((q) => (
-              <TableRow key={q.id} className="cursor-pointer">
-                <TableCell className="max-w-md">
-                  <Link to={ROUTE_PATTERN.QUESTION_DETAIL(q.id)} className="block truncate hover:underline">
-                    {q.prompt}
-                  </Link>
+              <TableRow
+                key={q.id}
+                className="border-b border-app-border last:border-0 cursor-pointer hover:bg-app-bg transition-colors"
+                onClick={() => navigate(questionDetailRoute(q.id))}
+              >
+                <TableCell className="py-3 text-sm text-app-text max-w-md">
+                  <span className="block truncate">{q.prompt}</span>
                 </TableCell>
-                <TableCell>
+                <TableCell className="py-3 text-sm">
                   <span className="inline-flex items-center gap-2">
-                    <span className="size-2 rounded-full" style={{ background: q.subject.colorHex }} />
-                    {q.subject.label}
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: q.subject.colorHex }} />
+                    <span className="text-app-muted">{q.subject.label}</span>
                   </span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">{q.topic.label}</TableCell>
-                <TableCell><Badge variant={DIFFICULTY_VARIANT[q.difficulty]}>{q.difficulty}</Badge></TableCell>
-                <TableCell><Badge variant={STATUS_VARIANT[q.status]}>{q.status}</Badge></TableCell>
-                <TableCell className="text-right tabular-nums">{q.totalAttempts}</TableCell>
-                <TableCell className="text-right tabular-nums">+{q.xpReward}</TableCell>
+                <TableCell className="py-3 text-sm text-app-muted">{q.topic.label}</TableCell>
+                <TableCell className="py-3 text-sm"><Badge variant={DIFFICULTY_VARIANT[q.difficulty]}>{q.difficulty}</Badge></TableCell>
+                <TableCell className="py-3 text-sm"><Badge variant={STATUS_VARIANT[q.status]}>{q.status}</Badge></TableCell>
+                <TableCell className="py-3 text-sm text-right tabular-nums text-app-text">{q.totalAttempts}</TableCell>
+                <TableCell className="py-3 text-sm text-right tabular-nums text-app-text">+{q.xpReward}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </Card>
+      </div>
 
       <div className="flex justify-between items-center">
-        <span className="text-xs text-muted-foreground">
+        <span className="text-sm text-app-muted">
           Showing {data?.data.length ?? 0} {data?.data.length === 1 ? 'question' : 'questions'}
         </span>
         <div className="flex gap-2">

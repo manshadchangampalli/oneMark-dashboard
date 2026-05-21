@@ -1,17 +1,18 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Card } from '@/components/ui/card';
-import { ROUTE_PATTERN } from '@/constants/routes';
+import { userDetailRoute } from '@/constants/routes';
 import { useUsers } from './hooks/users.hooks';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export default function Users() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [suspended, setSuspended] = useState<'' | 'true' | 'false'>('');
   const [cursor, setCursor] = useState<string | undefined>();
@@ -24,64 +25,69 @@ export default function Users() {
   });
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
-        <p className="text-sm text-muted-foreground mt-1">All registered learners.</p>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <div className="text-xs font-bold text-app-muted uppercase tracking-widest mb-1">Management · Users</div>
+          <h1 className="text-2xl font-bold text-app-text tracking-tight">Users</h1>
+          <p className="text-sm text-app-muted mt-1">All registered learners.</p>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[220px]">
-          <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+        <div className="relative flex-1 min-w-[220px] max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-app-muted pointer-events-none" />
           <Input
             placeholder="Search name or email…"
-            className="pl-8"
+            className="pl-9 bg-white border-app-border"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setCursor(undefined); }}
           />
         </div>
-        <select
+        <Select
           value={suspended}
           onChange={(e) => { setSuspended(e.target.value as '' | 'true' | 'false'); setCursor(undefined); }}
-          className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+          className="w-36"
         >
           <option value="">All users</option>
           <option value="false">Active</option>
           <option value="true">Suspended</option>
-        </select>
+        </Select>
       </div>
 
-      <Card className="overflow-hidden">
+      <div className="rounded-lg border border-app-border bg-white overflow-hidden shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Exam</TableHead>
-              <TableHead className="text-right">Attempts</TableHead>
-              <TableHead className="text-right">Accuracy</TableHead>
-              <TableHead className="text-right">XP</TableHead>
-              <TableHead>Status</TableHead>
+            <TableRow className="bg-app-bg border-b border-app-border">
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Name</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Email</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Exam</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">Attempts</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">Accuracy</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">XP</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-10">Loading…</TableCell></TableRow>
+              <TableRow><TableCell colSpan={7} className="h-32 text-center text-app-muted text-sm">Loading…</TableCell></TableRow>
             )}
             {!isLoading && data?.data.length === 0 && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-10">No users found.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={7} className="h-32 text-center text-app-muted text-sm">No users found.</TableCell></TableRow>
             )}
             {data?.data.map(u => (
-              <TableRow key={u.id}>
-                <TableCell>
-                  <Link to={ROUTE_PATTERN.USER_DETAIL(u.id)} className="font-medium hover:underline">{u.name}</Link>
-                </TableCell>
-                <TableCell className="text-muted-foreground">{u.email ?? '—'}</TableCell>
-                <TableCell>{u.targetExam ?? '—'}</TableCell>
-                <TableCell className="text-right tabular-nums">{u.totalAttempts}</TableCell>
-                <TableCell className="text-right tabular-nums">{u.accuracy != null ? `${u.accuracy}%` : '—'}</TableCell>
-                <TableCell className="text-right tabular-nums">{u.totalXp.toLocaleString()}</TableCell>
-                <TableCell>
+              <TableRow
+                key={u.id}
+                className="border-b border-app-border last:border-0 cursor-pointer hover:bg-app-bg transition-colors"
+                onClick={() => navigate(userDetailRoute(u.id))}
+              >
+                <TableCell className="py-3 text-sm font-medium text-app-text">{u.name}</TableCell>
+                <TableCell className="py-3 text-sm text-app-muted">{u.email ?? '—'}</TableCell>
+                <TableCell className="py-3 text-sm text-app-muted">{u.targetExam ?? '—'}</TableCell>
+                <TableCell className="py-3 text-sm text-right tabular-nums text-app-text">{u.totalAttempts}</TableCell>
+                <TableCell className="py-3 text-sm text-right tabular-nums text-app-text">{u.accuracy != null ? `${u.accuracy}%` : '—'}</TableCell>
+                <TableCell className="py-3 text-sm text-right tabular-nums text-app-text">{u.totalXp.toLocaleString()}</TableCell>
+                <TableCell className="py-3 text-sm">
                   {u.isSuspended
                     ? <Badge variant="destructive">Suspended</Badge>
                     : <Badge variant="success">Active</Badge>}
@@ -90,10 +96,10 @@ export default function Users() {
             ))}
           </TableBody>
         </Table>
-      </Card>
+      </div>
 
       <div className="flex justify-between items-center">
-        <span className="text-xs text-muted-foreground">
+        <span className="text-sm text-app-muted">
           Showing {data?.data.length ?? 0} {data?.data.length === 1 ? 'user' : 'users'}
         </span>
         <div className="flex gap-2">

@@ -58,6 +58,20 @@ export interface ListQuestionsParams {
   cursor?:     string;
 }
 
+export interface CreateQuestionDto {
+  subjectId:           string;
+  topicId:             string;
+  examIds:             string[];
+  difficulty:          'easy' | 'medium' | 'hard';
+  type?:               'mcq';
+  status?:             'draft' | 'published';
+  xpReward?:           number;
+  prompt:              string;
+  options:             { label: string; text: string; sub?: string | null }[];
+  correctOptionLabel:  string;
+  officialExplanation?: { steps: string[] } | null;
+}
+
 export const questionsApi = {
   list: async (params: ListQuestionsParams = {}): Promise<QuestionListPage> => {
     const { data } = await apiClient.get<QuestionListPage>(ApiRoute.QUESTIONS, { params });
@@ -65,6 +79,10 @@ export const questionsApi = {
   },
   detail: async (id: string): Promise<QuestionDetail> => {
     const { data } = await apiClient.get<QuestionDetail>(`${ApiRoute.QUESTIONS}/${id}`);
+    return data;
+  },
+  create: async (dto: CreateQuestionDto): Promise<QuestionDetail> => {
+    const { data } = await apiClient.post<QuestionDetail>(ApiRoute.QUESTIONS, dto);
     return data;
   },
 };

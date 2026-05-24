@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { questionsApi, type ListQuestionsParams } from '@/api/questions.api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { questionsApi, type ListQuestionsParams, type CreateQuestionDto } from '@/api/questions.api';
 
 export function useQuestions(params: ListQuestionsParams) {
   return useQuery({
@@ -14,5 +14,15 @@ export function useQuestion(id: string | undefined) {
     queryKey: ['admin-question', id],
     queryFn:  () => questionsApi.detail(id!),
     enabled:  !!id,
+  });
+}
+
+export function useCreateQuestion() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: CreateQuestionDto) => questionsApi.create(dto),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-questions'] });
+    },
   });
 }

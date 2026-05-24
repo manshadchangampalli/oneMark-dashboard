@@ -72,6 +72,33 @@ export interface CreateQuestionDto {
   officialExplanation?: { steps: string[] } | null;
 }
 
+export interface BulkRowInput {
+  subjectId?:           string;
+  subjectCode?:         string;
+  topicId?:             string;
+  topicCode?:           string;
+  examIds?:             string[];
+  examCodes?:           string[];
+  difficulty?:          'easy' | 'medium' | 'hard';
+  type?:                'mcq';
+  status?:              'draft' | 'published';
+  xpReward?:            number;
+  prompt?:              string;
+  options?:             { label: string; text: string; sub?: string | null }[];
+  correctOptionLabel?:  string;
+  officialExplanation?: { steps: string[] } | null;
+}
+
+export interface BulkImportResult {
+  total:     number;
+  succeeded: number;
+  failed:    number;
+  rows: Array<
+    | { index: number; ok: true;  questionId: string }
+    | { index: number; ok: false; error: string }
+  >;
+}
+
 export const questionsApi = {
   list: async (params: ListQuestionsParams = {}): Promise<QuestionListPage> => {
     const { data } = await apiClient.get<QuestionListPage>(ApiRoute.QUESTIONS, { params });
@@ -83,6 +110,13 @@ export const questionsApi = {
   },
   create: async (dto: CreateQuestionDto): Promise<QuestionDetail> => {
     const { data } = await apiClient.post<QuestionDetail>(ApiRoute.QUESTIONS, dto);
+    return data;
+  },
+  bulkCreate: async (rows: BulkRowInput[]): Promise<BulkImportResult> => {
+    const { data } = await apiClient.post<BulkImportResult>(
+      `${ApiRoute.QUESTIONS}/bulk`,
+      { questions: rows },
+    );
     return data;
   },
 };

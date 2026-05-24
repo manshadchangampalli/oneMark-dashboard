@@ -9,8 +9,8 @@ import {
 import { questionDetailRoute } from '@/constants/routes';
 import { useQuestions } from './hooks/questions.hooks';
 import type { ListQuestionsParams } from '@/api/questions.api';
-import { Search, Plus } from 'lucide-react';
-import { QUESTION_NEW_ROUTE } from '@/constants/routes';
+import { Search, Plus, Upload } from 'lucide-react';
+import { QUESTION_NEW_ROUTE, QUESTION_BULK_IMPORT_ROUTE } from '@/constants/routes';
 import { Input } from '@/components/ui/input';
 
 const STATUS_VARIANT: Record<string, 'success' | 'secondary' | 'outline'> = {
@@ -48,9 +48,14 @@ export default function Questions() {
           <h1 className="text-2xl font-bold text-app-text tracking-tight">Questions</h1>
           <p className="text-sm text-app-muted mt-1">Browse and review the question bank.</p>
         </div>
-        <Button onClick={() => navigate(QUESTION_NEW_ROUTE)}>
-          <Plus className="size-4" /> New question
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => navigate(QUESTION_BULK_IMPORT_ROUTE)}>
+            <Upload className="size-4" /> Bulk import
+          </Button>
+          <Button onClick={() => navigate(QUESTION_NEW_ROUTE)}>
+            <Plus className="size-4" /> New question
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">

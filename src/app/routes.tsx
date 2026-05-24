@@ -19,6 +19,7 @@ const Dashboard       = lazy(() => import('@/screens/dashboard/Dashboard'));
 const Questions       = lazy(() => import('@/screens/questions/Questions'));
 const QuestionDetail  = lazy(() => import('@/screens/questions/QuestionDetail'));
 const CreateQuestion  = lazy(() => import('@/screens/questions/CreateQuestion'));
+const BulkImport      = lazy(() => import('@/screens/questions/BulkImport'));
 const Users           = lazy(() => import('@/screens/users/Users'));
 const UserDetail      = lazy(() => import('@/screens/users/UserDetail'));
 const Exams           = lazy(() => import('@/screens/exams/Exams'));
@@ -41,7 +42,8 @@ export const router = createBrowserRouter([
         children: [
           { path: ROUTES.DASHBOARD,    element: <Suspense fallback={<Loading />}><Dashboard /></Suspense> },
           { path: ROUTES.QUESTIONS,    element: <Suspense fallback={<Loading />}><Questions /></Suspense> },
-          { path: 'questions/new',     element: <Suspense fallback={<Loading />}><CreateQuestion /></Suspense> },
+          { path: 'questions/new',          element: <Suspense fallback={<Loading />}><CreateQuestion /></Suspense> },
+          { path: 'questions/bulk-import',  element: <Suspense fallback={<Loading />}><BulkImport /></Suspense> },
           { path: 'questions/:id',     element: <Suspense fallback={<Loading />}><QuestionDetail /></Suspense> },
           { path: ROUTES.USERS,        element: <Suspense fallback={<Loading />}><Users /></Suspense> },
           { path: 'users/:id',         element: <Suspense fallback={<Loading />}><UserDetail /></Suspense> },

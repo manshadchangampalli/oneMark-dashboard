@@ -12,7 +12,8 @@ export function examDetailRoute(id: string) { return `/exams/${id}` }
 export function subjectDetailRoute(id: string) { return `/subjects/${id}` }
 export function topicDetailRoute(id: string) { return `/topics/${id}` }
 export function questionDetailRoute(id: string) { return `/questions/${id}` }
-export const QUESTION_NEW_ROUTE = '/questions/new';
+export const QUESTION_NEW_ROUTE         = '/questions/new';
+export const QUESTION_BULK_IMPORT_ROUTE = '/questions/bulk-import';
 export function userDetailRoute(id: string) { return `/users/${id}` }
 
 // Keep legacy pattern for backward compat

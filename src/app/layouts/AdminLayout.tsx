@@ -10,10 +10,10 @@ import { useState } from 'react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 const CONTENT_NAV = [
-  { to: ROUTES.EXAMS,     label: 'Exams',     icon: GraduationCap },
-  { to: ROUTES.SUBJECTS,  label: 'Subjects',  icon: FolderTree    },
-  { to: ROUTES.TOPICS,    label: 'Topics',    icon: ListTree      },
-  { to: ROUTES.QUESTIONS, label: 'Questions', icon: BookOpen      },
+  { to: ROUTES.EXAMS, label: 'Exams', icon: GraduationCap },
+  { to: ROUTES.SUBJECTS, label: 'Subjects', icon: FolderTree },
+  { to: ROUTES.TOPICS, label: 'Topics', icon: ListTree },
+  { to: ROUTES.QUESTIONS, label: 'Questions', icon: BookOpen },
 ];
 
 const MANAGE_NAV = [
@@ -118,7 +118,7 @@ export function AdminLayout() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="p-6 md:p-8 max-w-6xl">
+          <div className="p-6 md:p-8 max-w-[1500px]">
             <Outlet />
           </div>
         </div>

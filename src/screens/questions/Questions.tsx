@@ -49,12 +49,12 @@ export default function Questions() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[220px] max-w-xs">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[220px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-app-muted pointer-events-none" />
           <Input
             placeholder="Search prompt…"
-            className="pl-9 bg-white border-app-border"
+            className="pl-9 h-10 bg-white border-app-border"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setCursor(undefined); }}
           />
@@ -85,13 +85,13 @@ export default function Questions() {
         <Table>
           <TableHeader>
             <TableRow className="bg-app-bg border-b border-app-border">
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Prompt</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Subject</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Topic</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Difficulty</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Status</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">Attempts</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">XP</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted">Prompt</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted">Subject</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted">Topic</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted">Difficulty</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted">Status</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted text-right">Attempts</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted text-right">XP</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

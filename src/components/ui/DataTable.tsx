@@ -73,11 +73,11 @@ export function DataTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-xs">
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-app-muted pointer-events-none" />
-          <Input placeholder="Search…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 bg-white border-app-border" />
+          <Input placeholder="Search…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10 bg-white border-app-border" />
         </div>
         {actions}
       </div>
@@ -85,11 +85,15 @@ export function DataTable<T extends Record<string, any>>({
       <div className="rounded-lg border border-app-border bg-white overflow-hidden shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow className="bg-app-bg border-b border-app-border">
+            <TableRow className="bg-app-bg border-b border-app-border hover:bg-app-bg">
               {columns.map((col, i) => (
                 <TableHead
                   key={i}
-                  className={cn("text-xs font-bold uppercase tracking-wider text-app-muted py-3 select-none", col.sortable !== false && "cursor-pointer hover:text-app-text", col.className)}
+                  className={cn(
+                    "text-xs font-bold uppercase tracking-wider text-app-muted select-none",
+                    col.sortable !== false && "cursor-pointer hover:text-app-text",
+                    col.className,
+                  )}
                   onClick={col.sortable !== false ? () => toggleSort(String(col.accessorKey)) : undefined}
                 >
                   <div className="flex items-center">
@@ -112,7 +116,7 @@ export function DataTable<T extends Record<string, any>>({
                 className={cn("border-b border-app-border last:border-0 transition-colors", onRowClick && "cursor-pointer hover:bg-app-bg")}
               >
                 {columns.map((col, ci) => (
-                  <TableCell key={ci} className={cn("py-3 text-sm text-app-text", col.className)}>
+                  <TableCell key={ci} className={cn("text-sm text-app-text", col.className)}>
                     {col.cell ? col.cell(item) : getVal(item, String(col.accessorKey))}
                   </TableCell>
                 ))}
@@ -122,7 +126,7 @@ export function DataTable<T extends Record<string, any>>({
         </Table>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-1">
         <p className="text-sm text-app-muted">
           {filtered.length === 0 ? "No results" : `Showing ${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, filtered.length)} of ${filtered.length}`}
         </p>

@@ -34,12 +34,12 @@ export default function Users() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[220px] max-w-xs">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[220px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-app-muted pointer-events-none" />
           <Input
             placeholder="Search name or email…"
-            className="pl-9 bg-white border-app-border"
+            className="pl-9 h-10 bg-white border-app-border"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setCursor(undefined); }}
           />
@@ -59,13 +59,13 @@ export default function Users() {
         <Table>
           <TableHeader>
             <TableRow className="bg-app-bg border-b border-app-border">
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Name</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Email</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Exam</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">Attempts</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">Accuracy</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3 text-right">XP</TableHead>
-              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted py-3">Status</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted">Name</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted">Email</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted">Exam</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted text-right">Attempts</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted text-right">Accuracy</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted text-right">XP</TableHead>
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-app-muted">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -81,12 +81,12 @@ export default function Users() {
                 className="border-b border-app-border last:border-0 cursor-pointer hover:bg-app-bg transition-colors"
                 onClick={() => navigate(userDetailRoute(u.id))}
               >
-                <TableCell className="py-3 text-sm font-medium text-app-text">{u.name}</TableCell>
-                <TableCell className="py-3 text-sm text-app-muted">{u.email ?? '—'}</TableCell>
-                <TableCell className="py-3 text-sm text-app-muted">{u.targetExam ?? '—'}</TableCell>
-                <TableCell className="py-3 text-sm text-right tabular-nums text-app-text">{u.totalAttempts}</TableCell>
-                <TableCell className="py-3 text-sm text-right tabular-nums text-app-text">{u.accuracy != null ? `${u.accuracy}%` : '—'}</TableCell>
-                <TableCell className="py-3 text-sm text-right tabular-nums text-app-text">{u.totalXp.toLocaleString()}</TableCell>
+                <TableCell className="text-sm font-medium text-app-text">{u.name}</TableCell>
+                <TableCell className="text-sm text-app-muted">{u.email ?? '—'}</TableCell>
+                <TableCell className="text-sm text-app-muted">{u.targetExam ?? '—'}</TableCell>
+                <TableCell className="text-sm text-right tabular-nums text-app-text">{u.totalAttempts}</TableCell>
+                <TableCell className="text-sm text-right tabular-nums text-app-text">{u.accuracy != null ? `${u.accuracy}%` : '—'}</TableCell>
+                <TableCell className="text-sm text-right tabular-nums text-app-text">{u.totalXp.toLocaleString()}</TableCell>
                 <TableCell className="py-3 text-sm">
                   {u.isSuspended
                     ? <Badge variant="destructive">Suspended</Badge>

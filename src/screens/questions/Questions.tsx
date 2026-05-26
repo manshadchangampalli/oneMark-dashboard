@@ -118,6 +118,21 @@ export default function Questions() {
               >
                 <TableCell className="py-3 text-sm text-app-text max-w-md">
                   <span className="block truncate">{q.prompt}</span>
+                  {q.tags?.length > 0 && (
+                    <span className="mt-1 flex flex-wrap gap-1">
+                      {q.tags.slice(0, 4).map((t) => (
+                        <span
+                          key={t}
+                          className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-app-bg border border-app-border text-app-muted"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                      {q.tags.length > 4 && (
+                        <span className="text-[10px] text-app-muted">+{q.tags.length - 4} more</span>
+                      )}
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell className="py-3 text-sm">
                   <span className="inline-flex items-center gap-2">

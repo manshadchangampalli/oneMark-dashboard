@@ -6,6 +6,8 @@ export interface Exam {
   code:        string;
   label:       string;
   description: string | null;
+  categoryId:  string | null;
+  tier:        string | null;
   isActive:    boolean;
   archivedAt:  string | null;
   createdAt:   string;
@@ -14,15 +16,31 @@ export interface Exam {
   topics:      number;
 }
 
+export interface ExamCategory {
+  id:          string;
+  code:        string;
+  label:       string;
+  description: string | null;
+  colorHex:    string | null;
+  iconKey:     string | null;
+  sortOrder:   number;
+  isActive:    boolean;
+  archivedAt:  string | null;
+}
+
 export interface CreateExamDto {
   code:         string;
   label:        string;
+  categoryId:   string;
+  tier?:        string;
   description?: string;
   isActive?:    boolean;
 }
 
 export interface UpdateExamDto {
   label?:       string;
+  categoryId?:  string;
+  tier?:        string | null;
   description?: string;
   isActive?:    boolean;
 }
@@ -31,6 +49,12 @@ export const examsApi = {
   list: async (includeArchived = false): Promise<Exam[]> => {
     const { data } = await apiClient.get<Exam[]>(ApiRoute.EXAMS, { params: { includeArchived } });
     return data;
+  },
+  /** Flat list of categories — for the Exam create/edit picker. */
+  listCategories: async (): Promise<ExamCategory[]> => {
+    const { data } = await apiClient.get<Array<ExamCategory & { tiers: unknown }>>(`${ApiRoute.EXAMS}/categories`);
+    // Drop the nested `tiers` shape — admin form only needs the flat list
+    return data.map(({ tiers: _t, ...rest }) => rest);
   },
   detail: async (id: string): Promise<Exam & { counts: { userExams: number; subjectExams: number; topicExams: number; questionExams: number } }> => {
     const { data } = await apiClient.get(`${ApiRoute.EXAMS}/${id}`);

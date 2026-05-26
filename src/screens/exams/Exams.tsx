@@ -6,6 +6,7 @@ import { examsApi, type Exam, type CreateExamDto, type UpdateExamDto } from '@/a
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import {
@@ -134,12 +135,22 @@ function ExamFormDialog({
   const [code, setCode] = useState(existing?.code ?? '');
   const [label, setLabel] = useState(existing?.label ?? '');
   const [description, setDescription] = useState(existing?.description ?? '');
+  const [categoryId, setCategoryId] = useState(existing?.categoryId ?? '');
+  const [tier, setTier] = useState(existing?.tier ?? '');
   const [isActive, setIsActive] = useState(existing?.isActive ?? true);
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['exam-categories-flat'],
+    queryFn:  examsApi.listCategories,
+    enabled:  open,
+  });
 
   useResetForm(open, () => {
     setCode(existing?.code ?? '');
     setLabel(existing?.label ?? '');
     setDescription(existing?.description ?? '');
+    setCategoryId(existing?.categoryId ?? '');
+    setTier(existing?.tier ?? '');
     setIsActive(existing?.isActive ?? true);
   });
 
@@ -149,8 +160,24 @@ function ExamFormDialog({
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    if (isEdit) update.mutate({ label, description: description || undefined, isActive });
-    else create.mutate({ code, label, description: description || undefined, isActive });
+    if (isEdit) {
+      update.mutate({
+        label,
+        description: description || undefined,
+        categoryId: categoryId || undefined,
+        tier: tier || null,
+        isActive,
+      });
+    } else {
+      if (!categoryId) return; // required for create — UI prevents submit
+      create.mutate({
+        code, label,
+        categoryId,
+        tier: tier || undefined,
+        description: description || undefined,
+        isActive,
+      });
+    }
   }
 
   return (
@@ -168,11 +195,27 @@ function ExamFormDialog({
             <div className="space-y-1.5">
               <Label htmlFor="code">Code</Label>
               <Input id="code" value={code} onChange={(e) => setCode(e.target.value)}
-                placeholder="jee, neet, psc…" disabled={isEdit} required />
+                placeholder="psc-ldc, psc-police, jee-main…" disabled={isEdit} required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="label">Label</Label>
               <Input id="label" value={label} onChange={(e) => setLabel(e.target.value)} required />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="category">Category</Label>
+                <Select id="category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
+                  <option value="">Pick a category…</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.label}</option>
+                  ))}
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="tier">Tier</Label>
+                <Input id="tier" value={tier} onChange={(e) => setTier(e.target.value)}
+                  placeholder="10th Level / +2 Level / Degree Level" />
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="desc">Description</Label>

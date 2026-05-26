@@ -11,6 +11,7 @@ export interface QuestionListItem {
   status:        'draft' | 'published' | 'archived';
   xpReward:      number;
   successRate:   number | null;
+  tags:          string[];
   totalAttempts: number;
   createdAt:     string;
 }
@@ -44,6 +45,7 @@ export interface QuestionDetail {
   } | null;
   options: { id: string; label: string; text: string; sub: string | null; sortOrder: number }[];
   exams:   { id: string; code: string; label: string }[];
+  tags:    string[];
   totalAttempts: number;
   revisionCount: number;
 }
@@ -70,6 +72,7 @@ export interface CreateQuestionDto {
   options:             { label: string; text: string; sub?: string | null }[];
   correctOptionLabel:  string;
   officialExplanation?: { steps: string[] } | null;
+  tags?:               string[];
 }
 
 export interface BulkRowInput {
@@ -87,6 +90,7 @@ export interface BulkRowInput {
   options?:             { label: string; text: string; sub?: string | null }[];
   correctOptionLabel?:  string;
   officialExplanation?: { steps: string[] } | null;
+  tags?:                string[];
 }
 
 export interface BulkImportResult {

@@ -43,6 +43,7 @@ export default function CreateQuestion() {
   ]);
   const [correctLabel,   setCorrectLabel]   = useState('A');
   const [explanationText, setExplanationText] = useState(''); // newline-separated steps
+  const [tagsText, setTagsText] = useState(''); // comma-separated
 
   // Topic dropdown depends on subject
   const { data: topics = [] } = useQuery({
@@ -102,6 +103,7 @@ export default function CreateQuestion() {
       options:  options.map(o => ({ label: o.label, text: o.text, sub: o.sub || null })),
       correctOptionLabel: correctLabel,
       officialExplanation: steps.length > 0 ? { steps } : null,
+      tags: tagsText.split(',').map(t => t.trim()).filter(Boolean),
     };
 
     createMutation.mutate(dto, {
@@ -282,6 +284,27 @@ export default function CreateQuestion() {
           rows={5}
           className="flex w-full rounded-md border border-app-border bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
         />
+      </Section>
+
+      {/* Tags */}
+      <Section title="Tags" subtitle='Optional. Comma-separated. Use prefixes for queryable dimensions: stage:prelims, year:2024, source:LDC-2024-paper-2, topic-kind:current-affairs.'>
+        <Input
+          value={tagsText}
+          onChange={e => setTagsText(e.target.value)}
+          placeholder="stage:prelims, year:2024, source:LDC-2024-paper-2"
+        />
+        {tagsText.trim() && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {tagsText.split(',').map(t => t.trim()).filter(Boolean).map((t, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono bg-app-bg border border-app-border text-app-text"
+              >
+                {t.toLowerCase()}
+              </span>
+            ))}
+          </div>
+        )}
       </Section>
 
       {/* Footer actions */}

@@ -12,7 +12,9 @@ const SAMPLE = JSON.stringify(
     {
       subjectCode: 'polity',
       topicCode:   'indian-constitution',
-      examCodes:   ['psc-ldc'],
+      // Tag with every same-tier post so 10th-level prelims aspirants
+      // (LDC, LGS, VEO, Police, Fireman) all see this shared question.
+      examCodes:   ['psc-ldc', 'psc-lgs', 'psc-veo', 'psc-police', 'psc-fireman'],
       difficulty:  'medium',
       xpReward:    50,
       prompt:      'Who is regarded as the father of the Indian Constitution?',
@@ -24,6 +26,7 @@ const SAMPLE = JSON.stringify(
       ],
       correctOptionLabel: 'B',
       officialExplanation: { steps: ['Dr. B. R. Ambedkar chaired the drafting committee.'] },
+      tags: ['stage:prelims', 'year:2024', 'topic-kind:static-gk'],
     },
   ],
   null,
